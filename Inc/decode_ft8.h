@@ -8,7 +8,6 @@
 #ifndef DECODE_FT8_H_
 #define DECODE_FT8_H_
 
-#define MAX_MSG_LEN 40
 
 extern int Station_RSL;
 extern int Target_RSL;
@@ -31,11 +30,27 @@ typedef struct Decode
     char target_locator[7];
     int slot;
     Sequence sequence;
+    int calling_CQ;
 } Decode;
 
 extern Decode new_decoded[];
 
+typedef struct Called_Stations
+{
+    char call[14];
+    float distance;
+    int sync_score;
+};
+
+typedef struct display_message_details
+{
+    char message[22];
+    int text_color;
+};
+
 void process_selected_Station(int num_decoded, int TouchIndex);
 void set_QSO_Xmit_Freq(int freq);
+
+int strindex(const char *s, const char *t);
 
 #endif /* DECODE_FT8_H_ */

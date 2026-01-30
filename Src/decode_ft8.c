@@ -151,6 +151,11 @@ int ft8_decode(void)
 					}
 				}
 
+				if (strindex(new_decoded[num_decoded].call_to, "CQ") >= 0)
+			    {new_decoded[num_decoded].calling_CQ = 1;}
+			    else
+			    {new_decoded[num_decoded].calling_CQ = 0;}
+
 				++num_decoded;
 			}
 		}
@@ -242,4 +247,20 @@ void set_QSO_Xmit_Freq(int freq)
 
 	Set_Cursor_Frequency();
 	show_variable(400, 25, (int)NCO_Frequency);
+}
+
+int strindex(const char *s, const char *t)
+{
+  int result = -1;
+
+  for (int i = 0; s[i] != '\0'; i++)
+  {
+    int k = 0;
+    for (int j = i; t[k] != '\0' && s[j] == t[k]; j++, k++)
+      ;
+
+    if (k > 0 && t[k] == '\0')
+      result = i;
+  }
+  return result;
 }

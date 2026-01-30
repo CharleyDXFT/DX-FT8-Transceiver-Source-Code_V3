@@ -25,6 +25,10 @@ extern uint32_t start_time, ft8_time;
 
 extern int QSO_xmit;
 
+extern char Station_Call[11];
+extern char Station_Locator[7];
+
+
 extern int slot_state;
 extern int target_slot;
 extern int target_freq;

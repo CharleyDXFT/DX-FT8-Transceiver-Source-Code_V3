@@ -62,6 +62,11 @@ int target_slot;
 int target_freq;
 int slot_state = 0;
 int decode_flag = 0;
+
+extern int log_display_flag;  //refactir
+extern char current_message[22];
+
+
 // Used for skipping the TX slot
 int was_txing = 0;
 bool clr_pressed = false;
@@ -71,7 +76,8 @@ bool tx_pressed = false;
 // Autoseq TX text buffer
 static char autoseq_txbuf[MAX_MSG_LEN];
 // Autoseq QSO states text
-static char autoseq_state_strs[MAX_QUEUE_SIZE][MAX_LINE_LEN];
+static char autoseq_state_str[MAX_LINE_LEN];
+
 // Autoseq ctx queue log text
 static char autoseq_queue_strs[MAX_QUEUE_SIZE][53];
 static int master_decoded = 0;
@@ -88,6 +94,9 @@ static void CPU_CACHE_Enable(void);
 static void HID_InitApplication(void);
 #endif
 
+char Station_Call[11];         // six character call sign + /0
+char Station_Locator[7];       // up to six character locator  + /0
+
 // Helper function for updating TX region display
 void tx_display_update()
 {
@@ -99,8 +108,9 @@ void tx_display_update()
 	} else {
 		display_queued_message(autoseq_txbuf);
 	}
-	autoseq_get_qso_states(autoseq_state_strs);
-	display_qso_state(autoseq_state_strs);
+
+	autoseq_get_qso_state(autoseq_state_str);
+	display_qso_state(autoseq_state_str);
 }
 
 static void update_synchronization(void)
@@ -138,25 +148,16 @@ static void update_synchronization(void)
 		was_txing = 1;
 		// Partial TX, set the TX counter based on current ft8_time
 		ft8_xmit_counter = (ft8_time % 15000) / 160; // 160ms per symbol
-		// Log the TX
-		char log_str[128];
-		make_Real_Time();
-		make_Real_Date();
-		// Log the ctx queue
-		autoseq_log_ctx_queue(autoseq_queue_strs);
-		for (int i = 0; i < MAX_QUEUE_SIZE; i++) {
-			const char *cur_line = autoseq_queue_strs[i];
-			if (cur_line[0] == '\0') {
-				break;
-			}
-			Write_RxTxLog_Data(cur_line);
-		}
-		snprintf(log_str, sizeof(log_str), "T [%s %s][%s] %s",
-				 log_rtc_date_string,
-				 log_rtc_time_string,
-				 sBand_Data[BandIndex].display,
-				 autoseq_txbuf);
-		Write_RxTxLog_Data(log_str);
+
+
+	    // Log the TX
+	    if (strindex(autoseq_txbuf, "CQ") < 0)
+	    {
+	      strcpy(current_message, autoseq_txbuf);
+	      update_message_log_display(1);
+	    }
+
+
 		tx_display_update();
 	}
 }
@@ -220,7 +221,7 @@ int main(int argc, char *argv[]) {
 	}
 #endif
 
-	autoseq_init();
+	autoseq_init(Station_Call, Station_Locator);
 
 
 	while (1)
@@ -262,6 +263,7 @@ int main(int argc, char *argv[]) {
 			// Called at 25Hz, need to be efficient
 			display_RealTime(100, 240);
 
+
 			// falling edge detection - tune mode exited
 			if (!Tune_On && tune_pressed) {
 				// Need to display RX and TX again
@@ -269,6 +271,7 @@ int main(int argc, char *argv[]) {
 				tx_display_update();
 			}
 			tune_pressed = Tune_On;
+
 
 			DSP_Flag = 0;
 
@@ -287,38 +290,74 @@ int main(int argc, char *argv[]) {
 			{
 				display_messages(new_decoded, master_decoded);
 			}
-			// Write all the decoded messages to RxTxLog
-			make_Real_Time();
-			make_Real_Date();
-			for (int i = 0; i < master_decoded; ++i) {
-				char log_str[64];
-				snprintf(log_str, sizeof(log_str), "%c [%s %s][%s] %s %s %s %2i %d",
-				         was_txing ? 'O' : 'R',
-						 log_rtc_date_string,
-						 log_rtc_time_string,
-						 sBand_Data[BandIndex].display,
-						 new_decoded[i].call_to,
-						 new_decoded[i].call_from,
-						 new_decoded[i].locator,
-						 new_decoded[i].snr,
-						 new_decoded[i].freq_hz);
-				Write_RxTxLog_Data(log_str);
+
+		    for (int i = 0; i < master_decoded; ++i)
+		    {
+		      if (strindex(new_decoded[i].call_to, Station_Call) >= 0)
+		      {
+		        char received_message[22];
+		        sprintf(received_message, "%s %s %s", new_decoded[i].call_to, new_decoded[i].call_from, new_decoded[i].locator);
+		        strcpy(current_message, received_message);
+		        update_message_log_display(0);
+		      }
+		    }
+
+		    if (!was_txing)
+		    {
+		      for (int i = 0; i < master_decoded; i++)
+		      {
+		        // TX is (potentially) necessary
+		        if (autoseq_on_decode(&new_decoded[i]))
+		        {
+		          // Fetch TX msg
+		          if (autoseq_get_next_tx(autoseq_txbuf))
+		          {
+		            queue_custom_text(autoseq_txbuf);
+		            QSO_xmit = 1;
+		            tx_display_update();
+		            break;
+		          }
+		        }
+		      }
+
+
+	          // No valid response has received to advance auto sequencing.
+
+	      if (!QSO_xmit)
+	      {  //Check if QSO_xmit
+	        if (autoseq_get_next_tx(autoseq_txbuf))
+	        {
+	          queue_custom_text(autoseq_txbuf);
+	          QSO_xmit = 1;
+	        }
+	        else if (Beacon_On)
+	        {
+	          target_slot = slot_state ^ 1; // toggle the slot
+	          autoseq_start_cq();
+	          autoseq_get_next_tx(autoseq_txbuf);
+	          queue_custom_text(autoseq_txbuf);
+	          QSO_xmit = 1;
+	          tx_display_update();
+	        }
+
+	        else if (Auto_QSO)
+
+	        { // Auto_QSO_Start
+
+	          if(Valid_CQ_Candidate) {
+	          process_selected_Station(master_decoded, max_sync_score_index);
+	          autoseq_on_touch(&new_decoded[max_sync_score_index]);
+	          autoseq_get_next_tx(autoseq_txbuf);
+	          queue_custom_text(autoseq_txbuf);
+	          QSO_xmit = 1;
+	          tx_display_update();
+	          store_CQ_Call();
+	          }
+	        } //Auto_QSO_End
+
 			}
-			if (!was_txing) {
-				autoseq_on_decodes(new_decoded, master_decoded);
-				if (autoseq_get_next_tx(autoseq_txbuf))
-				{
-					queue_custom_text(autoseq_txbuf);
-					QSO_xmit = 1;
-				} else if (Beacon_On)  {
-					autoseq_start_cq();
-					autoseq_get_next_tx(autoseq_txbuf);
-					queue_custom_text(autoseq_txbuf);
-					QSO_xmit = 1;
-					target_slot = slot_state ^ 1;
-				}
-				tx_display_update();
-			}
+
+		    }
 			
 			decode_flag = 0;
 		} // end of servicing FT_Decode
@@ -332,7 +371,7 @@ int main(int argc, char *argv[]) {
 			terminate_QSO();
 			QSO_xmit = 0;
 			was_txing = 0;
-			autoseq_init();
+			autoseq_init(Station_Call, Station_Locator);
 			autoseq_txbuf[0] = '\0';
 			tx_display_update();
 			clr_pressed = false;
@@ -344,16 +383,25 @@ int main(int argc, char *argv[]) {
 			tx_display_update();
 		}
 
-		if (!Tune_On && FT8_Touch_Flag && FT_8_TouchIndex < master_decoded) {
-			process_selected_Station(master_decoded, FT_8_TouchIndex);
-			autoseq_on_touch(&new_decoded[FT_8_TouchIndex]);
-			if (autoseq_get_next_tx(autoseq_txbuf)) {
-				queue_custom_text(autoseq_txbuf);
-				QSO_xmit = 1;
-			}
-			tx_display_update();
-			FT8_Touch_Flag = 0;
-		}
+		/*
+		  if (!Tune_On && log_display_flag == 1)
+		  {
+		    display_logged_messages();
+		    log_display_flag = 0;
+		  }
+		*/
+
+
+	  if (!Tune_On &&  FT8_Touch_Flag && FT_8_TouchIndex < master_decoded)
+	  {
+		process_selected_Station(master_decoded, FT_8_TouchIndex);
+		autoseq_on_touch(&new_decoded[FT_8_TouchIndex]);
+		autoseq_get_next_tx(autoseq_txbuf);
+		queue_custom_text(autoseq_txbuf);
+		QSO_xmit = 1;
+		FT8_Touch_Flag = 0;
+		tx_display_update();
+	  }
 
 		update_synchronization();
 	}

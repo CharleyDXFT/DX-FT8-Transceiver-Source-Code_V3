@@ -21,11 +21,13 @@
 #include "DS3231.h"
 #include "SiLabs.h"
 #include "options.h"
+#include "qso_display.h"
 
 int Tune_On; // 0 = Receive, 1 = Xmit Tune Signal
 int Beacon_On;
 int Arm_Tune;
 int Auto_Sync;
+int Auto_QSO;
 uint16_t start_freq;
 int BandIndex;
 int QSO_Fix;
@@ -59,9 +61,9 @@ FreqStruct sBand_Data[NumBands] =
 		 28074, "28.075"}};
 
 ButtonStruct sButtonData[NumButtons] = {
-	{// button 0  inhibit xmit either as beacon or answer CQ
-	 /*text0*/ "Clr ",
-	 /*text1*/ "Clr ",
+	{// button 0  provide selection of auto/manual control of QSO mode
+	 /*text0*/ "Man ",
+	 /*text1*/ "Auto",
 	 /*blank*/ "    ",
 	 /*Active*/ 1,
 	 /*Displayed*/ 1,
@@ -504,8 +506,8 @@ ButtonStruct sButtonData[NumButtons] = {
 	 /*h*/ 30},
 
 	{// button 37 Grid
-	 /*text0*/ Locator,
-	 /*text1*/ Locator,
+	 /*text0*/ Station_Locator,
+	 /*text1*/ Station_Locator,
 	 /*blank*/ "    ",
 	 /*Active*/ 1,
 	 /*Displayed*/ 1,
@@ -635,7 +637,7 @@ void drawKey(uint16_t button)
 }
 void checkButton(void)
 {
-	for (uint16_t button = Clear; button < NumButtons; button++)
+	for (uint16_t button = AutoManual; button < NumButtons; button++)
 	{
 		if (testButton(sButtonData[button].x, sButtonData[button].y, sButtonData[button].w, sButtonData[button].h) == 1)
 		{
@@ -724,39 +726,41 @@ void executeButton(uint16_t index)
 {
 	switch (index)
 	{
-	case Clear:
-		clr_pressed = true;
-		toggle_button_state(Clear);
-		break;
+	case AutoManual:
+
+		if (!sButtonData[AutoManual].state)
+				{
+				Auto_QSO = 0;
+				}
+				else
+				{
+				Auto_QSO = 1;
+				}
+
+				break;
+
 
 	case QSOBeacon:
 		if (!sButtonData[QSOBeacon].state)
 		{
 			Beacon_On = 0;
-			Beacon_State = 0;
 		}
 		else
 		{
 			Beacon_On = 1;
-			Beacon_State = 1;
 		}
 		break;
 
 	case Tune:
 		if (!sButtonData[Tune].state)
 		{
-			//tune_Off_sequence();
 			Tune_On = 0;
-			//Arm_Tune = 0;
-			//xmit_flag = 0;
-			//receive_sequence();
 			erase_Cal_Display();
 		}
 		else
 		{
 			Tune_On = 1; // Turns off display of FT8 traffic
 			setup_Cal_Display();
-			//Arm_Tune = 0;
 		}
 		break;
 
@@ -913,15 +917,15 @@ void executeButton(uint16_t index)
 
 	case EditGrid:
 		if(sButtonData[EditGrid].state == 1){
-			strcpy(EditingText,Locator);
+			strcpy(EditingText,Station_Locator);
 			sButtonData[EditingWindow].text0 = EditingText;
 			EnableKeyboard();
 			for(int i=38; i<44; i++) sButtonData[i].Active = 0;
 			sButtonData[EditGrid].Active = 1;
 		}
 		else{
-			strcpy(Locator, EditingText);
-			sButtonData[Grid].text0 = Locator;
+			strcpy(Station_Locator, EditingText);
+			sButtonData[Grid].text0 = Station_Locator;
 			DisableKeyboard();
 			update_stationdata();
 		}

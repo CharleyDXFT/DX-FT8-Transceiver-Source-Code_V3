@@ -91,7 +91,7 @@ enum BandIndex
 
 enum ButtonIds
 {
-	Clear = 0,
+	AutoManual = 0,
 	QSOBeacon,
 	Tune,
 	RxTx,
@@ -186,6 +186,7 @@ enum ButtonIds
 
 extern int Tune_On; // 0 = Receive, 1 = Xmit Tune Signal
 extern int Beacon_On;
+extern int Auto_QSO;
 extern int Arm_Tune;
 extern int Auto_Sync;
 extern int QSO_Fix;

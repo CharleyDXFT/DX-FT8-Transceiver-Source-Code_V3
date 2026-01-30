@@ -8,6 +8,8 @@
 #include "gen_ft8.h"      // for Station_Call
 #include "main.h"         // for was_txing
 #include "qso_display.h"
+#include "Display.h"
+#include "autoseq_engine.h"
 
 #ifdef HOST_HAL_MOCK
 #include "host_mocks.h"
@@ -19,17 +21,33 @@
 #define MAX_RX_ROWS 10
 #define MAX_QSO_ROWS 10
 #define MAX_QSO_ENTRIES 100
-#define START_X_LEFT 0
-#define START_X_RIGHT 240
-#define START_Y 40 // FFT_H
-#define LINE_HT 20
+
+
 
 static const char *blank = "                     "; // 21 spaces
 static char worked_qso_entries[MAX_QSO_ENTRIES][MAX_LINE_LEN] = {};
 static int num_qsos = 0;
 
+static const char *auto_blank = "             "; // 14 spaces
+
+
 static void add_header();
 static void remove_header();
+
+const int auto_call_limit = 10;
+const int auto_logged_limit = 100;
+
+int max_sync_score;
+int max_sync_score_index;
+struct Called_Stations call_list[10];
+struct Called_Stations auto_logged_list[100];
+char current_message[22];
+
+int auto_logged;
+int Valid_CQ_Candidate;
+static const int max_log_messages = 9;
+int log_display_flag;
+struct display_message_details log_messages[9];
 
 typedef enum _MsgColor
 {
@@ -86,6 +104,8 @@ static void clear_qso_region()
 void display_messages(Decode new_decoded[], int decoded_messages)
 {
 	clear_rx_region();
+	max_sync_score = 0;
+	Valid_CQ_Candidate = 0;
 
 	for (int i = 0; i < decoded_messages && i < MAX_RX_ROWS; i++)
 	{
@@ -96,12 +116,28 @@ void display_messages(Decode new_decoded[], int decoded_messages)
         char message[MAX_MSG_LEN];
 		snprintf(message, MAX_LINE_LEN, "%s %s %s %2i", call_to, call_from, locator, new_decoded[i].snr);
         message[MAX_LINE_LEN] = '\0'; // Make sure it fits the display region
+
+        strcpy(current_message, message);
+
         MsgColor textcolor = White;
         MsgColor background = Black;
+
 		if (strcmp(call_to, "CQ") == 0 || strncmp(call_to, "CQ ", 3) == 0)
 		{
 			textcolor = Green;
+
+	        if(!check_call_list(i) && !check_log_list(i))  {
+
+	            if (new_decoded[i].sync_score > max_sync_score) {
+	              max_sync_score = new_decoded[i].sync_score;
+	              max_sync_score_index = i;
+	              Valid_CQ_Candidate = 1;
+	            }
+
+	          }
+
 		}
+
 		// Addressed me
 		if (strncmp(call_to, Station_Call, sizeof(Station_Call)) == 0)
 		{
@@ -112,6 +148,7 @@ void display_messages(Decode new_decoded[], int decoded_messages)
 		if (was_txing) {
 			textcolor = Yellow;
 		}
+
         display_line(false, i, background, textcolor, message);
 	}
 }
@@ -130,13 +167,10 @@ void display_txing_message(const char*msg)
     display_line(true, 0, Red, White, msg);
 }
 
-void display_qso_state(const char lines[][MAX_LINE_LEN])
+void display_qso_state(const char *txt)
 {
-    for(int i = 0; i < MAX_QUEUE_SIZE; i++)
-    {
-        display_line(true, 1 + i, Black, Black, blank);
-        display_line(true, 1 + i, Black, White, lines[i]);
-    }
+  display_line(true, 1, Black, Black, blank);
+  display_line(true, 1, Black, White, txt);
 }
 
 char * add_worked_qso() {
@@ -199,3 +233,127 @@ void _debug(const char *txt) {
 	return;
     display_line(true, 8, Black, Yellow, txt);
 }
+
+
+int check_call_list(int message_index) {
+
+  int test = 0;
+
+  for (int i = 0; i<auto_call_limit; i++) {
+
+    if (strcmp(call_list[i].call, new_decoded[message_index].call_from) == 0 )  {
+    test = 1;
+    }
+  }
+  return test;
+}
+
+
+int check_log_list(int message_index) {
+
+  int test = 0;
+
+  for (int i = 0; i<auto_logged; i++) {
+    if (strcmp(auto_logged_list[i].call, new_decoded[message_index].call_from) == 0 )  {
+    test = 1;
+    }
+  }
+  return test;
+}
+
+void store_CQ_Call(void) {
+
+  const char blank[] = "              ";
+
+  for (int i = 0; i < auto_call_limit - 1; i++)
+  {
+    strcpy(call_list[i].call, blank);
+    strcpy(call_list[i].call, call_list[i + 1].call);
+  }
+
+    strcpy(call_list[auto_call_limit -1].call, blank);
+    strcpy(call_list[auto_call_limit -1].call, new_decoded[max_sync_score_index].call_from);
+
+    //display_call_list(auto_call_limit);
+}
+
+int log_limit = 9;
+
+void store_logged_CQ_Call(const char *call)
+{
+
+	strcpy(auto_logged_list[auto_logged].call, call); //store candidate call so we do not duplicate call later
+
+	//if (auto_logged < log_limit) display_log_list(log_limit);
+
+
+	auto_logged++;
+
+	show_variable(260,220,auto_logged);
+}
+
+
+
+void display_log_list(int number_calls) {
+
+    for (int i = 0; i < number_calls ; i++)
+    display_line(true, i, Black, Yellow, auto_logged_list[i].call);
+
+}
+
+
+
+void clear_auto_memories(void) {
+
+
+    for(int j = 0; j < auto_logged; j++){
+    strcpy(call_list[j].call, auto_blank);
+    call_list[j].distance = 0.0;
+    call_list[j].sync_score = 0;
+     }
+    auto_logged = 0;
+
+}
+
+
+void update_message_log_display(int mode)
+{
+  const char blank[] = "                      ";
+
+  for (int i = 0; i < max_log_messages - 1; i++)
+  {
+    strcpy(log_messages[i].message, blank);
+    strcpy(log_messages[i].message, log_messages[i + 1].message);
+    log_messages[i].text_color = log_messages[i + 1].text_color;
+  }
+
+  if (mode)
+  {
+    strcpy(log_messages[max_log_messages - 1].message, blank);
+    strcpy(log_messages[max_log_messages - 1].message, current_message);
+    log_messages[max_log_messages - 1].text_color = 1;
+  }
+  else
+  {
+    strcpy(log_messages[max_log_messages - 1].message, blank);
+    strcpy(log_messages[max_log_messages - 1].message, current_message);
+    log_messages[max_log_messages - 1].text_color = 0;
+  }
+
+  log_display_flag = 1;
+}
+
+
+void display_logged_messages(void)
+{
+  clear_qso_region();
+
+  for (int i = 0; i < max_log_messages; i++)
+  {
+    if (log_messages[i].text_color)
+      display_line(true, i + 2, Black, Yellow, log_messages[i].message);
+    else
+      display_line(true, i + 2, Black, Red, log_messages[i].message);
+  }
+}
+

@@ -4,27 +4,44 @@
 
 #include <stdbool.h>
 #include "decode_ft8.h"
-#include "qso_display.h"
 #include "main.h"
+#include "button.h"
 
-void autoseq_init();
+//#define MAX_MSG_LEN 40
+#define MAX_MSG_LEN 22
+#define MAX_LINE_LEN 22
+#define MAX_RX_ROWS 10
+#define MAX_QSO_ROWS 10
+#define MAX_QSO_ENTRIES 100
+#define START_X_LEFT 0
+#define START_X_RIGHT 240
+#define START_Y 40 // FFT_H
+#define LINE_HT 20
+#define CALLSIGN_SIZE 11
+
+//#define START_X_LEFT 0
+//#define START_X_RIGHT 240
+//#define START_Y 40 // FFT_H
+//#define LINE_HT 20
+
+void autoseq_init(const char *myCall, const char *myGrid);
 
 void autoseq_start_cq(void);
 
 /* === Called for selected decode (manual response) === */
 void autoseq_on_touch(const Decode *msg);
 
-/* === Called for the entire decode array === */
-void autoseq_on_decodes(const Decode *messages, int num_decoded);
+/* === Called for **every** new decode (auto response) === */
+/* Return whether TX is needed */
+bool autoseq_on_decode(const Decode *msg);
 
-/* === Provide the message we should transmit === */
+/* === Provide the message we should transmit this slot (if any) === */
 bool autoseq_get_next_tx(char out_text[MAX_MSG_LEN]);
 
-/* === Populate the strings for displaying the QSO states  === */
-void autoseq_get_qso_states(char lines[][MAX_LINE_LEN]);
-
-/* === Populate the strings for logging the ctx queue === */
-void autoseq_log_ctx_queue(char lines[][53]);
+/* === Populate the string for displaying the current QSO state  === */
+void autoseq_get_qso_state(char out_text[MAX_LINE_LEN]);
 
 /* === Slot timer / time‑out manager === */
 void autoseq_tick(void);
+
+

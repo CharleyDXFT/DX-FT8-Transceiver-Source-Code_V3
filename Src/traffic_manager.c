@@ -22,8 +22,6 @@ const int ADC_DVC_Off = 90;
 
 #define FT8_TONE_SPACING 625
 
-int Beacon_State;
-
 void setup_to_transmit_on_next_DSP_Flag(void)
 {
 	ft8_xmit_counter = 0;

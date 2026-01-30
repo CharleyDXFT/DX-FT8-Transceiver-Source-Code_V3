@@ -9,12 +9,12 @@
 #define GEN_FT8_H_
 
 #include <stdint.h>
+#include "main.h"
+#include "autoseq_engine.h"
 
-#define CALLSIGN_SIZE 10
+
 #define LOCATOR_SIZE 5
 
-extern char Station_Call[CALLSIGN_SIZE];  // seven character call sign (e.g. 3DA0XYZ) + optional /P + null terminator
-extern char Locator[LOCATOR_SIZE];        // four character locator  + /0
 extern char Target_Call[CALLSIGN_SIZE];   // same as Station_Call
 extern char Target_Locator[LOCATOR_SIZE]; // same as Locator
 extern int Target_RSL;

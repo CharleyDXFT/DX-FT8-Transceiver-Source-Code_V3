@@ -54,6 +54,7 @@
 #include "Display.h"
 #include "qso_display.h"
 #include "traffic_manager.h"
+#include "PskInterface.h"
 
 uint32_t start_time, ft8_time;
 
@@ -222,6 +223,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 	autoseq_init(Station_Call, Station_Locator);
+	updateTime();
 
 
 	while (1)

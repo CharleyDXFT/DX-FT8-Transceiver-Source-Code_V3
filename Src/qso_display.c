@@ -173,7 +173,7 @@ void display_qso_state(const char *txt)
   display_line(true, 1, Black, White, txt);
 }
 
-char * add_worked_qso() {
+char *add_worked_qso() {
     // Handle circular buffer overflow - use modulo for array indexing
     int entry_index = num_qsos % MAX_QSO_ENTRIES;
     num_qsos++;

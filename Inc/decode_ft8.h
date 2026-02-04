@@ -40,17 +40,22 @@ typedef struct Called_Stations
     char call[14];
     float distance;
     int sync_score;
-};
+} Called_Stations;
+
 
 typedef struct display_message_details
 {
     char message[22];
     int text_color;
-};
+} display_message_details ;
 
 void process_selected_Station(int num_decoded, int TouchIndex);
 void set_QSO_Xmit_Freq(int freq);
 
+
+
 int strindex(const char *s, const char *t);
+
+
 
 #endif /* DECODE_FT8_H_ */

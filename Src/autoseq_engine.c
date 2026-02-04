@@ -16,6 +16,8 @@
 #include "gen_ft8.h" // For accessing CQ_Mode_Index and saving Target_*
 #include "ADIF.h"    // For write_ADIF_Log()
 #include "button.h"  // For BandIndex
+#include "PskInterface.h"
+#include "qso_display.h"
 
 /***** Compile‑time knobs *****/
 #define MAX_TX_RETRY 2
@@ -116,8 +118,7 @@ void autoseq_on_touch(const Decode *msg)
     strncpy(ctx.dxcall, msg->call_from, sizeof(ctx.dxcall) - 1);
     strncpy(ctx.dxgrid, msg->locator, sizeof(ctx.dxgrid) - 1);
     ctx.snr_tx = msg->snr;
-   // set_state(Skip_Tx1 ? AS_REPORT : AS_REPLYING,      Skip_Tx1 ? TX2 : TX1, MAX_TX_RETRY);
-    set_state(AS_REPLYING,    TX1, MAX_TX_RETRY);
+    set_state(Skip_Tx1 ? AS_REPORT : AS_REPLYING,      Skip_Tx1 ? TX2 : TX1, MAX_TX_RETRY);
 }
 
 /* === Called for **every** new decode (auto response) === */

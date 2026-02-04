@@ -258,6 +258,8 @@ void set_QSO_Xmit_Freq(int freq)
 	show_variable(400, 25, (int)NCO_Frequency);
 }
 
+
+
 int strindex(const char *s, const char *t)
 {
   int result = -1;
@@ -273,3 +275,4 @@ int strindex(const char *s, const char *t)
   }
   return result;
 }
+

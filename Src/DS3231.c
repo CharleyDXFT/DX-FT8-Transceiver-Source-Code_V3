@@ -177,7 +177,7 @@ void display_RealTime(int x, int y) {
 	if (rtc_date != old_rtc_date || rtc_month != old_rtc_month || rtc_year != old_rtc_year) {
 		display_Real_Date(0, 240);
 		Init_Log_File();
-		clear_auto_memories();
+		//clear_auto_memories();
 	}
 }
 

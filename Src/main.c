@@ -80,7 +80,7 @@ static char autoseq_txbuf[MAX_MSG_LEN];
 static char autoseq_state_str[MAX_LINE_LEN];
 
 // Autoseq ctx queue log text
-static char autoseq_queue_strs[MAX_QUEUE_SIZE][53];
+//static char autoseq_queue_strs[MAX_QUEUE_SIZE][53];
 static int master_decoded = 0;
 static bool worked_qsos_in_display = false;
 // Used for display RX and TX after returning from Tune

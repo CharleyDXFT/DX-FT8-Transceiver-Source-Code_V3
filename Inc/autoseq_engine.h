@@ -7,7 +7,6 @@
 #include "main.h"
 #include "button.h"
 
-//#define MAX_MSG_LEN 40
 #define MAX_MSG_LEN 22
 #define MAX_LINE_LEN 22
 #define MAX_RX_ROWS 10
@@ -19,10 +18,6 @@
 #define LINE_HT 20
 #define CALLSIGN_SIZE 11
 
-//#define START_X_LEFT 0
-//#define START_X_RIGHT 240
-//#define START_Y 40 // FFT_H
-//#define LINE_HT 20
 
 void autoseq_init(const char *myCall, const char *myGrid);
 

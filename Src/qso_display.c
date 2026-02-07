@@ -35,12 +35,12 @@ static void add_header();
 static void remove_header();
 
 const int auto_call_limit = 10;
-const int auto_logged_limit = 100;
+const int auto_logged_limit = 50;
 
 int max_sync_score;
 int max_sync_score_index;
 struct Called_Stations call_list[10];
-struct Called_Stations auto_logged_list[100];
+struct Called_Stations auto_logged_list[50];
 char current_message[22];
 
 int auto_logged;
@@ -253,7 +253,7 @@ int check_log_list(int message_index) {
 
   int test = 0;
 
-  for (int i = 0; i<auto_logged; i++) {
+	  for (int i = 0; i<auto_logged_limit; i++) {
     if (strcmp(auto_logged_list[i].call, new_decoded[message_index].call_from) == 0 )  {
     test = 1;
     }
@@ -277,20 +277,23 @@ void store_CQ_Call(void) {
     //display_call_list(auto_call_limit);
 }
 
-int log_limit = 9;
+
 
 void store_logged_CQ_Call(const char *call)
 {
 
-	strcpy(auto_logged_list[auto_logged].call, call); //store candidate call so we do not duplicate call later
+  const char blank[] = "             ";
 
-	//if (auto_logged < log_limit) display_log_list(log_limit);
+  for (int i = 0; i < auto_logged_limit - 1; i++)
+  {
+    strcpy(auto_logged_list[i].call, blank);
+    strcpy(auto_logged_list[i].call, auto_logged_list[i + 1].call);
+  }
 
-
-	auto_logged++;
-
-	show_variable(260,220,auto_logged);
+  strcpy(auto_logged_list[auto_logged_limit - 1].call, blank);
+  strcpy(auto_logged_list[auto_logged_limit - 1].call, call);
 }
+
 
 
 

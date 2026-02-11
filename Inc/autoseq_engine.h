@@ -16,8 +16,10 @@
 #define START_X_RIGHT 240
 #define START_Y 40 // FFT_H
 #define LINE_HT 20
-#define CALLSIGN_SIZE 11
 
+#define CALLSIGN_SIZE  14
+#define LOCATOR_SIZE  7
+#define RSL_SIZE  5
 
 void autoseq_init(const char *myCall, const char *myGrid);
 
@@ -31,12 +33,10 @@ void autoseq_on_touch(const Decode *msg);
 bool autoseq_on_decode(const Decode *msg);
 
 /* === Provide the message we should transmit this slot (if any) === */
-bool autoseq_get_next_tx(char out_text[MAX_MSG_LEN]);
+bool autoseq_get_next_tx(char *out_text);
 
 /* === Populate the string for displaying the current QSO state  === */
-void autoseq_get_qso_state(char out_text[MAX_LINE_LEN]);
+void autoseq_get_qso_state(char *out_text);
 
 /* === Slot timer / time‑out manager === */
 void autoseq_tick(void);
-
-

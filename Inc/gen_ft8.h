@@ -13,7 +13,7 @@
 #include "autoseq_engine.h"
 
 
-#define LOCATOR_SIZE 5
+//#define LOCATOR_SIZE 5
 
 
 

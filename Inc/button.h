@@ -94,7 +94,7 @@ enum ButtonIds
 	AutoManual = 0,
 	QSOBeacon,
 	Tune,
-	RxTx,
+	Clear,
 	CQFree,
 	FixedReceived,
 	Sync,

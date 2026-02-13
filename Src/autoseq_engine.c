@@ -18,7 +18,7 @@
 #include "button.h"  // For BandIndex
 
 /***** Compile‑time knobs *****/
-#define MAX_TX_RETRY 2
+#define MAX_TX_RETRY 3
 
 /***** Identifiers for the six canonical FT8 messages *****/
 typedef enum

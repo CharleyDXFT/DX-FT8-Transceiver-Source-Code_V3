@@ -81,7 +81,7 @@ ButtonStruct sButtonData[NumButtons] = {
 	 /*Active*/ 1,
 	 /*Displayed*/ 1,
 	 /*state*/ 0,
-	 /*x*/ 55,
+	 /*x*/ 53,
 	 /*y*/ line2,
 	 /*w*/ button_bar_width,
 	 /*h*/ 30},
@@ -93,22 +93,22 @@ ButtonStruct sButtonData[NumButtons] = {
 	 /*Active*/ 1,
 	 /*Displayed*/ 1,
 	 /*state*/ 0,
-	 /*x*/ 110,
+	 /*x*/ 106,
 	 /*y*/ line2,
 	 /*w*/ button_width,
 	 /*h*/ 30},
 
 	{// button 3 display R/T status
-	 /*text0*/ "Rx",
-	 /*text1*/ "Tx",
-	 /*blank*/ "  ",
+	 /*text0*/ "Clr ",
+	 /*text1*/ "Clr",
+	 /*blank*/ "   ",
 	 /*Active*/ 1,
 	 /*Displayed*/ 1,
 	 /*state*/ 0,
-	 /*x*/ 165,
+	 /*x*/ 159,
 	 /*y*/ line2,
-	 /*w*/ 0, // setting the width and height to 0 turns off touch response , display only
-	 /*h*/ 0},
+	 /*w*/ button_width, // setting the width and height to 0 turns off touch response , display only
+	 /*h*/ 30},
 
 	{// button 4 CQ or free mode
 	 /*text0*/ " CQ ",
@@ -117,7 +117,7 @@ ButtonStruct sButtonData[NumButtons] = {
 	 /*Active*/ 1,
 	 /*Displayed*/ 1,
 	 /*state*/ 0,
-	 /*x*/ 200,
+	 /*x*/ 212,
 	 /*y*/ line2,
 	 /*w*/ button_bar_width,
 	 /*h*/ 30},
@@ -129,7 +129,7 @@ ButtonStruct sButtonData[NumButtons] = {
 	 /*Active*/ 1,
 	 /*Displayed*/ 1,
 	 /*state*/ 0,
-	 /*x*/ 255,
+	 /*x*/ 265,
 	 /*y*/ line2,
 	 /*w*/ button_bar_width,
 	 /*h*/ 30},
@@ -141,7 +141,7 @@ ButtonStruct sButtonData[NumButtons] = {
 	 /*Active*/ 1,
 	 /*Displayed*/ 1,
 	 /*state*/ 0,
-	 /*x*/ 310,
+	 /*x*/ 318,
 	 /*y*/ line2,
 	 /*w*/ button_bar_width,
 	 /*h*/ 30},
@@ -766,8 +766,9 @@ void executeButton(uint16_t index)
 		}
 		break;
 
-	case RxTx:
-		// no code required, all dependent stuff works off of button state
+	case Clear:
+		clr_pressed = true;
+		toggle_button_state(Clear);
 		break;
 
 	case CQFree:
@@ -1327,16 +1328,16 @@ void receive_sequence(void)
 {
 	PTT_Out_Set(); // set output high to connect receiver to antenna
 	HAL_Delay(10);
-	sButtonData[RxTx].state = 0;
-	drawButton(RxTx);
+	//sButtonData[RxTx].state = 0;
+	//drawButton(RxTx);
 }
 
 void xmit_sequence(void)
 {
 	PTT_Out_RST_Clr(); // set output low to disconnect receiver from antenna
 	HAL_Delay(10);
-	sButtonData[RxTx].state = 1;
-	drawButton(RxTx);
+	//sButtonData[RxTx].state = 1;
+	//drawButton(RxTx);
 }
 
 const uint64_t F_boot = 11229600000ULL;

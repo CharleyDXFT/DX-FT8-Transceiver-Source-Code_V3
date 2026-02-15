@@ -40,26 +40,21 @@ So, once a station call logged, 50 other station's call will have to be logged b
 ### For a comprhensive guide to using the DX_FT8 the write up found on Barb's GitHub Repository is still most useful.
 https://github.com/WB2CBA/DX-FT8-FT8-MULTIBAND-TABLET-TRANSCEIVER/blob/main/DX_FT8%20-%20FT8%20DIGITAL%20MODES%20HF%20GUI%20TRANSCEIVER%20Build%20guide%20V1.7.pdf
 
-
-### DX_FT8 V 3.0 includes the ability to synchronize the device time  to the Internet and reception reports uploaded to the PskReporter at https://www.pskreporter.info/
-### This requires an external ESP32 module
-### Please see https://github.com/g8kig/DX-FT8-TimeSync_PSKReporter for more information about constructing and programming the simple module that plugs into the transceiver.
-###
-### To submit more accurate reports to PSK reporter, a six-character locator can be used. All you have to do is modify the locator in StationData.ini as follows:
-
-```
-[Station]
-Call=W5BAA
-Locator=EM00vn
-```
-Note: this is only used for PSK Reporter.
+### DX_FT8 V 3.0 includes the ability to synchronize the device time  to the Internet and to upload reception reports to PskReporter at https://www.pskreporter.info/
+This requires an external ESP32 module
+Please see https://github.com/g8kig/DX-FT8-TimeSync_PSKReporter for more information about constructing and programming the simple module that plugs into the transceiver.
+### Many Thanks to Paul, G8KIG for creating this capability
 
 ## Building
-### Beware!! Due to the limited skills of the author the DX_FT8 V3.0 is NOT merged into the Mail Branch of this Repositry. Instead, use the 
-### Follow the instructions at the top of the Makefile to set up the compiler and tools
-### For Linux and MacOS users, please also set the environment variable USERPROFILE to point to your home directory.
-### so 'export USERPROFILE=$HOME && code' works when invoking Visual Studio Code from the command line
-### or add export USERPROFILE=$HOME to your .zprofile.
-###
+### Beware!! Due to the limited skills of the author the DX_FT8 V3.0 is NOT merged into the Mail Branch of this Repositry. Instead, use the DX_FT8_V3.0 Branch!
+
+## Contibutors to the DX_FT8 V3.0 Project Include:
+### - Barb, WB2CBA, who created the great board.
+### - Jim, KQ7B, who provided the inspiration.
+### - Paul, g8kig, who patiently hosted the firmware on GitHub and made a number of very important improvements which allowed further development of the firmware.
+### - Wei, AG6AQ, who added SOTA, POTA, Free Text and Keyboard Data Entry.
+### - Zhenxing, N6HAN, who rewrote the FT8 Traffic Management code to provide a comprehensive FT8 State Machine.
+
+
 ## What's Next?
 ## Since the Source Code is Open Source we invite you to join in with your improvements!!

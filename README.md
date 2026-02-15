@@ -37,7 +37,7 @@ So, once a station call logged, 50 other station's call will have to be logged b
 
 <img width="1093" height="739" alt="image" src="https://github.com/user-attachments/assets/4f822284-27e2-4ba1-93fc-a2b6a42e330c" />
 
-### For a comprhensive guide to using the DX_FT8 the write up found on Barb's GitHub Repository is still most useful.
+### For a comprhensive guide to using the DX_FT8 V 3.0 Application the write up found on Barb's GitHub Repository is still most useful.
 https://github.com/WB2CBA/DX-FT8-FT8-MULTIBAND-TABLET-TRANSCEIVER/blob/main/DX_FT8%20-%20FT8%20DIGITAL%20MODES%20HF%20GUI%20TRANSCEIVER%20Build%20guide%20V1.7.pdf
 
 ### DX_FT8 V 3.0 includes the ability to synchronize the device time  to the Internet and to upload reception reports to PskReporter at https://www.pskreporter.info/

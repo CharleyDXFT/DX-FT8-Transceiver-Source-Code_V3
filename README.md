@@ -1,4 +1,20 @@
-# DX-FT8-Transceiver-Source-Code_V2
+# DX_FT8  V3.0
+
+<img width="1146" height="670" alt="image" src="https://github.com/user-attachments/assets/b67c8713-3c5a-416e-97d9-a9f5d327bcb7" />
+
+### This project is a Fork from DX_FT8 V2.0 and was motivated by the nice project the Jim Conrad, KQ7B shared with the BluQRP Group. https://github.com/conr2286
+
+Jim's version of the FT8 application includes the abitlity to make automated calls to stations calling CQ. I found this most usefull and decided to add it to
+the tools already in DX_FT8. 
+
+As you will see from the photo above the Touch Buttons at the bottom have been modified by eliminating the RX - TX Indictor and adding a Manual / Auto Button.
+The new button controls only the QSO Mode of operation and the Beacon Mode is unaffected.
+
+
+
+
+
+### DX-FT8-Transceiver-Source-Code_V2
 
 <img width="1050" height="334" alt="image" src="https://github.com/user-attachments/assets/7413b20f-af99-4005-b84a-3a4e1367aab7" />
 

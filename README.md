@@ -2,21 +2,38 @@
 
 <img width="1146" height="670" alt="image" src="https://github.com/user-attachments/assets/b67c8713-3c5a-416e-97d9-a9f5d327bcb7" />
 
-### This project is a Fork from DX_FT8 V2.0 and was motivated by the nice project the Jim Conrad, KQ7B shared with the BluQRP Group. https://github.com/conr2286
+### This project is a Fork from DX_FT8 V2.0 and was motivated by the nice project that Jim Conrad, KQ7B, shared with the BluQRP Group. https://github.com/conr2286
 
 Jim's version of the FT8 application includes the abitlity to make automated calls to stations calling CQ. I found this most usefull and decided to add it to
-the tools already in DX_FT8. 
+the tools already in DX_FT8 V2.0. 
 
-As you will see from the photo above the Touch Buttons at the bottom have been modified by eliminating the RX - TX Indictor and adding a Manual / Auto Button.
+As you will see from the photo above that the Touch Buttons at the bottom of the display have been modified by eliminating the RX-TX Indictor and adding a Manual / Auto Button.
 The new button controls only the QSO Mode of operation and the Beacon Mode is unaffected.
 
+Likewise, when the Auto - Manual button is in the Manual State, the QSO Mode of operation works the same as in DX_FT8 V 2.0. 
+
+Here is how the QSO Mode works in the Auto State;
+
+The application searches the FT8 messages for Stations calling CQ and picks the station with the strongest decoded signal and then sends a call to the station.
+When a station replies to the call, the application completes the FT8 QSO as with anyother contact. The automated call to a station will be repeated up to 3 times.
+
+Using an automated method of initiating and completing an FT8 QSO has the inherent risk of spawning an extended calling match with another station using an automated FT8 
+QSO method. 
+
+So, in order to curtail such a calling match two other tools have been added to limiting repeated calls to 3 repeats.
+
+First, a delay que has been built that is 10 elements long so that once a station has been automatically called that station's call enters the que. When the auto qso 
+method searches for a new CQ Station to call, the delay que is searched and if found the station calling CQ is ignored. When another valid CQ candidate is found, the 
+station's call in entered in the que and all entered station calls are shifted
 
 
 
 
-### DX-FT8-Transceiver-Source-Code_V2
 
-<img width="1050" height="334" alt="image" src="https://github.com/user-attachments/assets/7413b20f-af99-4005-b84a-3a4e1367aab7" />
+
+
+
+
 
 ## Version 2 of the DX_FT8 Firmware is the result of 10 months of user collaboration which offers a great FT8 Experience. 
 

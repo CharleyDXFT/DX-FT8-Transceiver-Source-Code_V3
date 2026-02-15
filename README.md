@@ -46,7 +46,7 @@ Please see https://github.com/g8kig/DX-FT8-TimeSync_PSKReporter for more informa
 ### Many Thanks to Paul, G8KIG for creating this capability
 
 ## Building
-### Beware!! Due to the limited skills of the author the DX_FT8 V3.0 is NOT merged into the Mail Branch of this Repositry. Instead, use the DX_FT8_V3.0 Branch!
+### Beware!! Due to the limited skills of the author the DX_FT8 V3.0 is NOT merged into the Main Branch of this Repositry. Instead, use the DX_FT8_V3.0 Branch!
 
 ## Contibutors to the DX_FT8 V3.0 Project Include:
 ### - Barb, WB2CBA, who created the great board.
